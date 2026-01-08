@@ -85,6 +85,8 @@ For production, set this to your deployed backend URL.
 Since the backend runs continuously and blocks the terminal, you have two options:
 
 **Option 1: Backend already running in another terminal** (Recommended)
+
+- **No API key needed** - Frontend doesn't require OPENAI_API_KEY
 - Open a **new terminal window/tab**
 - Navigate to the frontend directory
 - Run the frontend-only script:
@@ -107,12 +109,13 @@ From the frontend directory:
 
 This script will:
 - Check dependencies and install if needed
+- **Requires OPENAI_API_KEY** (since it starts the backend)
 - Start the backend server in the background (if `uv` is available)
 - Start the frontend development server
 - Show you the URLs and log locations
 - Handle cleanup when you press Ctrl+C (stops both servers)
 
-> **Note:** If you already have the backend running, you can't use this option - use Option 1 instead.
+> **Note:** This script requires `OPENAI_API_KEY` to be set because it starts the backend. If you already have the backend running in another terminal, use Option 1 instead (it doesn't require the API key).
 
 **Option 3: Manual start** (Separate terminals)
 

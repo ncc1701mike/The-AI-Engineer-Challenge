@@ -52,19 +52,25 @@ if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
     }
 fi
 
-# Check if OPENAI_API_KEY is set
+# Check if uv is available for backend
+if ! command -v uv >/dev/null 2>&1; then
+    print_warning "uv is not installed. Backend cannot start."
+    print_info "Install with: pip install uv"
+    print_info "Or use start-frontend.sh if backend is already running in another terminal"
+    exit 1
+fi
+
+# Check if OPENAI_API_KEY is set (only needed if starting backend)
 if [ -z "$OPENAI_API_KEY" ]; then
-    print_warning "OPENAI_API_KEY is not set"
+    print_error "OPENAI_API_KEY is not set"
+    print_info "This script starts the backend server, which requires an OpenAI API key."
     print_info "Please set it in your current terminal:"
     echo "    export OPENAI_API_KEY=sk-..."
     echo ""
-    read -p "Press Enter to continue anyway, or Ctrl+C to exit and set the key..."
-fi
-
-# Check if uv is available for backend
-if ! command -v uv >/dev/null 2>&1; then
-    print_warning "uv is not installed. Backend may not start."
-    print_info "Install with: pip install uv"
+    print_info "Alternatively, if your backend is already running, use:"
+    echo "    ./start-frontend.sh"
+    echo ""
+    exit 1
 fi
 
 # Function to cleanup on exit
