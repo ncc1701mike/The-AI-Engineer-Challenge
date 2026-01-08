@@ -23,16 +23,17 @@ export default function BackgroundMusic() {
       audioRef.current.loop = true;
       audioRef.current.muted = true; // Start muted to allow autoplay
       
-      // Try to autoplay (starting muted often works better in browsers)
+      // Load and try to autoplay (starting muted often works better in browsers)
+      audioRef.current.load();
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            // Autoplay succeeded (muted)
+            // Autoplay succeeded (muted) - will unmute on user interaction
             console.log('Audio autoplay started (muted)');
           })
           .catch((error) => {
-            console.log('Autoplay prevented:', error);
+            console.log('Autoplay prevented, will start on user interaction:', error);
           });
       }
     }
@@ -40,25 +41,29 @@ export default function BackgroundMusic() {
 
   // Handle user interaction to unmute audio automatically
   useEffect(() => {
+    let hasUnmuted = false;
+    
     const handleUserInteraction = () => {
-      if (audioRef.current && isMuted === false && audioRef.current.muted) {
-        // User interacted - unmute automatically
-        audioRef.current.muted = false;
-        console.log('Audio unmuted on user interaction');
+      if (audioRef.current && !hasUnmuted && !isMuted) {
+        // User interacted - unmute automatically if not manually muted
+        if (audioRef.current.muted) {
+          audioRef.current.muted = false;
+          hasUnmuted = true;
+          console.log('Audio unmuted on user interaction');
+        }
       }
     };
 
     // Listen for any user interaction to unmute
-    window.addEventListener('click', handleUserInteraction, { once: true });
-    window.addEventListener('keydown', handleUserInteraction, { once: true });
-    window.addEventListener('touchstart', handleUserInteraction, { once: true });
-    window.addEventListener('mousedown', handleUserInteraction, { once: true });
+    const events = ['click', 'keydown', 'touchstart', 'mousedown', 'focus'];
+    events.forEach(event => {
+      window.addEventListener(event, handleUserInteraction, { once: true, passive: true });
+    });
 
     return () => {
-      window.removeEventListener('click', handleUserInteraction);
-      window.removeEventListener('keydown', handleUserInteraction);
-      window.removeEventListener('touchstart', handleUserInteraction);
-      window.removeEventListener('mousedown', handleUserInteraction);
+      events.forEach(event => {
+        window.removeEventListener(event, handleUserInteraction);
+      });
     };
   }, [isMuted]);
 
