@@ -85,20 +85,44 @@ export default function BackgroundMusic() {
         autoPlay
         loop
         onError={(e) => {
-          // If local files fail, try fallback
+          // Handle audio loading errors gracefully
           const audio = e.currentTarget;
-          if (audio.src && !audio.src.includes('pixabay')) {
-            console.log('Local audio file not found, trying fallback...');
-            audio.src = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-            audio.load();
-            audio.play().catch(() => {});
+          console.log('Audio loading error, attempting fallback...');
+          
+          // If we haven't tried the fallback yet, switch to it
+          if (audio.src && !audio.src.includes('soundhelix') && !audio.src.includes('archive.org')) {
+            // Try multiple fallback URLs
+            const fallbacks = [
+              'https://archive.org/download/minecraft_music_volume_alpha/Calm1.mp3',
+              'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+            ];
+            
+            let fallbackIndex = 0;
+            const tryNextFallback = () => {
+              if (fallbackIndex < fallbacks.length) {
+                audio.src = fallbacks[fallbackIndex];
+                fallbackIndex++;
+                audio.load();
+                audio.play().catch(() => {
+                  if (fallbackIndex < fallbacks.length) {
+                    tryNextFallback();
+                  }
+                });
+              }
+            };
+            
+            tryNextFallback();
           }
         }}
       >
         {/* Try local file first, then fallback to external source */}
         <source src="/music/ambient-background.mp3" type="audio/mpeg" />
         <source src="/music/ambient-background.ogg" type="audio/ogg" />
-        {/* Fallback: Royalty-free ambient track */}
+        {/* Fallback: Royalty-free ambient tracks */}
+        <source 
+          src="https://archive.org/download/minecraft_music_volume_alpha/Calm1.mp3" 
+          type="audio/mpeg" 
+        />
         <source 
           src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" 
           type="audio/mpeg" 
