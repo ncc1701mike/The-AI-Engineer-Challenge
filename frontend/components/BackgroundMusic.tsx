@@ -10,38 +10,70 @@ import { useState, useRef, useEffect } from 'react';
  * 
  * The music is intentionally subtle and calming, designed to enhance
  * focus and relaxation without being distracting.
+ * Autoplays on mount with only a mute/unmute control.
  */
 export default function BackgroundMusic() {
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Initialize audio on mount
+  // Initialize audio and attempt autoplay on mount
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = 0.3; // Set to 30% volume for subtle background
       audioRef.current.loop = true;
+      
+      // Try to autoplay (may fail on some browsers without user interaction)
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Autoplay succeeded
+            setHasInteracted(true);
+          })
+          .catch((error) => {
+            // Autoplay failed - user will need to interact first
+            console.log('Autoplay prevented. User interaction required.');
+          });
+      }
     }
   }, []);
 
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch((error) => {
-          console.error('Error playing audio:', error);
-          // Some browsers require user interaction before playing audio
-        });
+  // Handle user interaction to enable autoplay
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      if (audioRef.current && !hasInteracted && !isMuted) {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => setHasInteracted(true))
+            .catch(() => {});
+        }
       }
-      setIsPlaying(!isPlaying);
-    }
-  };
+    };
+
+    // Listen for any user interaction
+    window.addEventListener('click', handleUserInteraction, { once: true });
+    window.addEventListener('keydown', handleUserInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
+    };
+  }, [hasInteracted, isMuted]);
 
   const toggleMute = () => {
     if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      const newMutedState = !isMuted;
+      audioRef.current.muted = newMutedState;
+      setIsMuted(newMutedState);
+      
+      // If unmuting and hasn't played yet, try to play
+      if (!newMutedState && !hasInteracted) {
+        audioRef.current.play()
+          .then(() => setHasInteracted(true))
+          .catch(() => {});
+      }
     }
   };
 
@@ -50,20 +82,25 @@ export default function BackgroundMusic() {
       <audio
         ref={audioRef}
         preload="auto"
-        onEnded={() => {
-          // Ensure looping works even if onEnded fires
-          if (audioRef.current && isPlaying) {
-            audioRef.current.play();
+        autoPlay
+        loop
+        onError={(e) => {
+          // If local files fail, try fallback
+          const audio = e.currentTarget;
+          if (audio.src && !audio.src.includes('pixabay')) {
+            console.log('Local audio file not found, trying fallback...');
+            audio.src = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+            audio.load();
+            audio.play().catch(() => {});
           }
         }}
       >
-        {/* Using a royalty-free ambient track similar to Minecraft's soundscape */}
         {/* Try local file first, then fallback to external source */}
         <source src="/music/ambient-background.mp3" type="audio/mpeg" />
         <source src="/music/ambient-background.ogg" type="audio/ogg" />
-        {/* Fallback: Pixabay royalty-free ambient track (Minecraft-like) */}
+        {/* Fallback: Royalty-free ambient track */}
         <source 
-          src="https://cdn.pixabay.com/download/audio/2022/03/19/audio_126368.mp3?filename=minecraft-song-126368.mp3" 
+          src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" 
           type="audio/mpeg" 
         />
         Your browser does not support the audio element.
@@ -72,19 +109,12 @@ export default function BackgroundMusic() {
       <div className="music-controls">
         <button
           className="music-button"
-          onClick={togglePlay}
-          aria-label={isPlaying ? 'Pause music' : 'Play music'}
-        >
-          {isPlaying ? '⏸' : '▶'}
-        </button>
-        <button
-          className="music-button"
           onClick={toggleMute}
           aria-label={isMuted ? 'Unmute music' : 'Mute music'}
+          title={isMuted ? 'Unmute music' : 'Mute music'}
         >
           {isMuted ? '🔇' : '🔊'}
         </button>
-        <span className="music-label">Ambient</span>
       </div>
     </>
   );
