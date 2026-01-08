@@ -14,66 +14,59 @@ import { useState, useRef, useEffect } from 'react';
  */
 export default function BackgroundMusic() {
   const [isMuted, setIsMuted] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Initialize audio and attempt autoplay on mount
+  // Initialize audio - start muted to allow autoplay, then unmute on first interaction
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.3; // Set to 30% volume for subtle background
+      audioRef.current.volume = 0.25; // Set to 25% volume for subtle background
       audioRef.current.loop = true;
+      audioRef.current.muted = true; // Start muted to allow autoplay
       
-      // Try to autoplay (may fail on some browsers without user interaction)
+      // Try to autoplay (starting muted often works better in browsers)
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            // Autoplay succeeded
-            setHasInteracted(true);
+            // Autoplay succeeded (muted)
+            console.log('Audio autoplay started (muted)');
           })
           .catch((error) => {
-            // Autoplay failed - user will need to interact first
-            console.log('Autoplay prevented. User interaction required.');
+            console.log('Autoplay prevented:', error);
           });
       }
     }
   }, []);
 
-  // Handle user interaction to enable autoplay
+  // Handle user interaction to unmute audio automatically
   useEffect(() => {
     const handleUserInteraction = () => {
-      if (audioRef.current && !hasInteracted && !isMuted) {
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => setHasInteracted(true))
-            .catch(() => {});
-        }
+      if (audioRef.current && isMuted === false && audioRef.current.muted) {
+        // User interacted - unmute automatically
+        audioRef.current.muted = false;
+        console.log('Audio unmuted on user interaction');
       }
     };
 
-    // Listen for any user interaction
+    // Listen for any user interaction to unmute
     window.addEventListener('click', handleUserInteraction, { once: true });
     window.addEventListener('keydown', handleUserInteraction, { once: true });
+    window.addEventListener('touchstart', handleUserInteraction, { once: true });
+    window.addEventListener('mousedown', handleUserInteraction, { once: true });
 
     return () => {
       window.removeEventListener('click', handleUserInteraction);
       window.removeEventListener('keydown', handleUserInteraction);
+      window.removeEventListener('touchstart', handleUserInteraction);
+      window.removeEventListener('mousedown', handleUserInteraction);
     };
-  }, [hasInteracted, isMuted]);
+  }, [isMuted]);
 
   const toggleMute = () => {
     if (audioRef.current) {
       const newMutedState = !isMuted;
       audioRef.current.muted = newMutedState;
       setIsMuted(newMutedState);
-      
-      // If unmuting and hasn't played yet, try to play
-      if (!newMutedState && !hasInteracted) {
-        audioRef.current.play()
-          .then(() => setHasInteracted(true))
-          .catch(() => {});
-      }
     }
   };
 
@@ -91,10 +84,10 @@ export default function BackgroundMusic() {
           
           // If we haven't tried the fallback yet, switch to it
           if (audio.src && !audio.src.includes('soundhelix') && !audio.src.includes('archive.org')) {
-            // Try multiple fallback URLs
+            // Try multiple soothing fallback URLs
             const fallbacks = [
-              'https://archive.org/download/minecraft_music_volume_alpha/Calm1.mp3',
-              'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+              'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+              'https://archive.org/download/MinecraftVolumeAlpha/Minecraft%20-%20Volume%20Alpha%20-%2003%20Subwoofer%20Lullaby.mp3'
             ];
             
             let fallbackIndex = 0;
@@ -115,16 +108,20 @@ export default function BackgroundMusic() {
           }
         }}
       >
-        {/* Try local file first, then fallback to external source */}
+        {/* Try local file first, then fallback to soothing ambient sources */}
         <source src="/music/ambient-background.mp3" type="audio/mpeg" />
         <source src="/music/ambient-background.ogg" type="audio/ogg" />
-        {/* Fallback: Royalty-free ambient tracks */}
+        {/* Fallback: Soothing ambient tracks - more calming and peaceful */}
         <source 
-          src="https://archive.org/download/minecraft_music_volume_alpha/Calm1.mp3" 
+          src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" 
           type="audio/mpeg" 
         />
         <source 
-          src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" 
+          src="https://archive.org/download/MinecraftVolumeAlpha/Minecraft%20-%20Volume%20Alpha%20-%2003%20Subwoofer%20Lullaby.mp3" 
+          type="audio/mpeg" 
+        />
+        <source 
+          src="https://freemusicarchive.org/file/music/ccCommunity/Kevin_MacLeod/Kevin_MacLeod_-_08_-_Lullaby.mp3" 
           type="audio/mpeg" 
         />
         Your browser does not support the audio element.
