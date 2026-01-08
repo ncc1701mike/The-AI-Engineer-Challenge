@@ -42,7 +42,7 @@ A beautiful, contemporary mid-century modern-inspired frontend for the AI Mental
 
 ### Prerequisites
 
-- Node.js 18+ and npm (or yarn/pnpm)
+- Node.js 18+ (npm included)
 - Backend API running (see main README.md for backend setup)
 
 ### Installation
