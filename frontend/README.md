@@ -28,17 +28,11 @@ A beautiful, contemporary mid-century modern-inspired frontend for the AI Mental
 
    This script will:
    - Check Node.js installation
-   - Detect and repair npm if needed
    - Install all dependencies
    - Verify backend configuration
    - Provide instructions for next steps
 
-3. If npm needs repair, run the repair script first:
-   ```bash
-   ./repair-npm.sh
-   ```
-
-4. Once setup is complete, start the application:
+3. Once setup is complete, start the application:
    ```bash
    ./start.sh
    ```
@@ -58,13 +52,7 @@ A beautiful, contemporary mid-century modern-inspired frontend for the AI Mental
    cd frontend
    ```
 
-2. **If npm is not working**, repair it first:
-   ```bash
-   ./repair-npm.sh
-   ```
-   Or manually reinstall Node.js from https://nodejs.org/
-
-3. Install dependencies:
+2. Install dependencies:
    ```bash
    npm install
    # or
@@ -105,7 +93,7 @@ Since the backend runs continuously and blocks the terminal, you have two option
   ./start-frontend.sh
   ```
   This will:
-  - Check if dependencies are installed
+  - Check if dependencies are installed (and install if needed)
   - Verify backend is accessible
   - Start the frontend development server
   - Run in the foreground (you can see the logs)
@@ -152,6 +140,15 @@ This script will:
    ```
    http://localhost:3000
    ```
+
+---
+
+> **Note:** In case npm fails or is not working, run the permanent fix script:
+> ```bash
+> cd frontend
+> ./fix-npm-permanent.sh
+> ```
+> This script permanently fixes npm by installing Node.js via Homebrew. After running it, restart your terminal and continue with the setup steps above. This fix should be permanent and automatic every time the app is opened.
 
 ## 🎵 Background Music
 
