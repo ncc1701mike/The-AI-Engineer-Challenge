@@ -16,55 +16,82 @@ export default function BackgroundMusic() {
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Initialize audio - start muted to allow autoplay, then unmute on first interaction
+  // Initialize audio and attempt immediate autoplay (not muted)
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = 0.25; // Set to 25% volume for subtle background
-      audioRef.current.loop = true;
-      audioRef.current.muted = true; // Start muted to allow autoplay
-      
-      // Load and try to autoplay (starting muted often works better in browsers)
-      audioRef.current.load();
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            // Autoplay succeeded (muted) - will unmute on user interaction
-            console.log('Audio autoplay started (muted)');
-          })
-          .catch((error) => {
-            console.log('Autoplay prevented, will start on user interaction:', error);
-          });
-      }
-    }
-  }, []);
+    if (!audioRef.current) return;
 
-  // Handle user interaction to unmute audio automatically
-  useEffect(() => {
-    let hasUnmuted = false;
+    const audio = audioRef.current;
+    audio.volume = 0.25; // Set to 25% volume for subtle background
+    audio.loop = true;
+    audio.muted = false; // Not muted - try to play with sound
+    audio.preload = 'auto';
     
-    const handleUserInteraction = () => {
-      if (audioRef.current && !hasUnmuted && !isMuted) {
-        // User interacted - unmute automatically if not manually muted
-        if (audioRef.current.muted) {
-          audioRef.current.muted = false;
-          hasUnmuted = true;
-          console.log('Audio unmuted on user interaction');
+    // Set up error handling for source loading
+    let currentSourceIndex = 0;
+    const audioSources = [
+      '/music/ambient-background.mp3',
+      'https://archive.org/download/MinecraftVolumeAlpha/03%20Subwoofer%20Lullaby.mp3',
+      'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+    ];
+
+    const tryNextSource = () => {
+      if (currentSourceIndex < audioSources.length) {
+        audio.src = audioSources[currentSourceIndex];
+        currentSourceIndex++;
+        audio.load();
+        
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('Audio autoplay started successfully');
+              // Ensure not muted
+              audio.muted = false;
+            })
+            .catch((error) => {
+              console.log('Autoplay blocked, trying muted approach:', error);
+              // Try muted autoplay as fallback
+              audio.muted = true;
+              audio.play()
+                .then(() => {
+                  console.log('Audio started muted, will unmute on first interaction');
+                  // Unmute on any user interaction
+                  const unmuteOnInteraction = () => {
+                    if (!isMuted && audio.muted) {
+                      audio.muted = false;
+                      console.log('Audio unmuted on user interaction');
+                    }
+                    document.removeEventListener('click', unmuteOnInteraction);
+                    document.removeEventListener('keydown', unmuteOnInteraction);
+                    document.removeEventListener('touchstart', unmuteOnInteraction);
+                  };
+                  document.addEventListener('click', unmuteOnInteraction, { once: true });
+                  document.addEventListener('keydown', unmuteOnInteraction, { once: true });
+                  document.addEventListener('touchstart', unmuteOnInteraction, { once: true });
+                })
+                .catch(() => {
+                  if (currentSourceIndex < audioSources.length) {
+                    // Try next source
+                    tryNextSource();
+                  } else {
+                    console.error('All audio sources failed');
+                  }
+                });
+            });
         }
       }
     };
 
-    // Listen for any user interaction to unmute
-    const events = ['click', 'keydown', 'touchstart', 'mousedown', 'focus'];
-    events.forEach(event => {
-      window.addEventListener(event, handleUserInteraction, { once: true, passive: true });
+    // Handle source loading errors
+    audio.addEventListener('error', () => {
+      console.log('Audio source error, trying next source...');
+      if (currentSourceIndex < audioSources.length) {
+        tryNextSource();
+      }
     });
 
-    return () => {
-      events.forEach(event => {
-        window.removeEventListener(event, handleUserInteraction);
-      });
-    };
+    // Start with first source
+    tryNextSource();
   }, [isMuted]);
 
   const toggleMute = () => {
@@ -82,53 +109,8 @@ export default function BackgroundMusic() {
         preload="auto"
         autoPlay
         loop
-        onError={(e) => {
-          // Handle audio loading errors gracefully
-          const audio = e.currentTarget;
-          console.log('Audio loading error, attempting fallback...');
-          
-          // If we haven't tried the fallback yet, switch to it
-          if (audio.src && !audio.src.includes('soundhelix') && !audio.src.includes('archive.org')) {
-            // Try multiple soothing fallback URLs
-            const fallbacks = [
-              'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-              'https://archive.org/download/MinecraftVolumeAlpha/Minecraft%20-%20Volume%20Alpha%20-%2003%20Subwoofer%20Lullaby.mp3'
-            ];
-            
-            let fallbackIndex = 0;
-            const tryNextFallback = () => {
-              if (fallbackIndex < fallbacks.length) {
-                audio.src = fallbacks[fallbackIndex];
-                fallbackIndex++;
-                audio.load();
-                audio.play().catch(() => {
-                  if (fallbackIndex < fallbacks.length) {
-                    tryNextFallback();
-                  }
-                });
-              }
-            };
-            
-            tryNextFallback();
-          }
-        }}
       >
-        {/* Try local file first, then fallback to soothing ambient sources */}
-        <source src="/music/ambient-background.mp3" type="audio/mpeg" />
-        <source src="/music/ambient-background.ogg" type="audio/ogg" />
-        {/* Fallback: Soothing ambient tracks - more calming and peaceful */}
-        <source 
-          src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" 
-          type="audio/mpeg" 
-        />
-        <source 
-          src="https://archive.org/download/MinecraftVolumeAlpha/Minecraft%20-%20Volume%20Alpha%20-%2003%20Subwoofer%20Lullaby.mp3" 
-          type="audio/mpeg" 
-        />
-        <source 
-          src="https://freemusicarchive.org/file/music/ccCommunity/Kevin_MacLeod/Kevin_MacLeod_-_08_-_Lullaby.mp3" 
-          type="audio/mpeg" 
-        />
+        {/* Audio sources will be set programmatically for better error handling */}
         Your browser does not support the audio element.
       </audio>
 
