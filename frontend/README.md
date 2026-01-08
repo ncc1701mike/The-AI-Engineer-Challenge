@@ -185,10 +185,18 @@ The frontend includes several helpful scripts to automate setup and running:
   - Verifies backend configuration
   - Provides detailed feedback and instructions
 
-- **`repair-npm.sh`** - Dedicated npm repair script that:
-  - Attempts multiple methods to fix broken npm
+- **`fix-npm-permanent.sh`** - **Permanent npm fix script (RECOMMENDED)** that:
+  - Installs Node.js via Homebrew for proper package management
+  - Permanently fixes npm installation
+  - Updates PATH in shell configuration files
+  - Provides a robust solution that won't break again
+  - **Use this if npm is broken or not working**
+
+- **`repair-npm.sh`** - Quick npm repair script that:
+  - Attempts multiple methods to fix broken npm temporarily
   - Tries corepack, curl install, Homebrew, and more
   - Provides manual repair instructions if automatic repair fails
+  - **Note: May not be permanent - use fix-npm-permanent.sh for lasting fix**
 
 - **`start.sh`** - Start both servers script that:
   - Starts both backend and frontend servers together
@@ -217,7 +225,8 @@ frontend/
 ├── public/
 │   └── music/              # Background music files (optional)
 ├── setup.sh                # Automated setup script
-├── repair-npm.sh           # npm repair script
+├── fix-npm-permanent.sh    # Permanent npm fix (RECOMMENDED if npm broken)
+├── repair-npm.sh           # Quick npm repair script
 ├── start.sh                # Start both servers script
 ├── start-frontend.sh       # Start frontend only (backend running elsewhere)
 ├── package.json            # Dependencies and scripts
@@ -301,28 +310,63 @@ CORS is already configured on the backend to allow frontend requests.
 
 ## 🐛 Troubleshooting
 
-### npm not working
+### npm not working - PERMANENT FIX (Recommended)
 
-If you encounter npm issues, run the repair script:
+**If npm is broken or not working, use this permanent fix:**
+
+```bash
+cd frontend
+./fix-npm-permanent.sh
+```
+
+This script will:
+- ✅ **Permanently fix npm** by installing Node.js via Homebrew
+- ✅ **Properly manage** Node.js and npm installation
+- ✅ **Update your PATH** automatically in shell config files
+- ✅ **Provide a robust solution** that won't break again
+- ✅ **Verify installation** and test npm functionality
+
+**This is the recommended solution** as it uses Homebrew's package management to ensure npm is properly installed and maintained.
+
+### Alternative fixes (if permanent fix doesn't work)
+
+If the permanent fix script doesn't work, try these alternatives:
+
+**Option 1: Manual Homebrew installation**
+```bash
+# Install Node.js (includes npm)
+brew install node
+
+# Add to PATH (if needed - script does this automatically)
+echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc  # ARM Mac
+echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc     # Intel Mac
+
+# Restart terminal or source config
+source ~/.zshrc
+```
+
+**Option 2: Use nvm (Node Version Manager)**
+```bash
+# Install nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Restart terminal, then:
+nvm install 18
+nvm use 18
+nvm alias default 18  # Set as default
+```
+
+**Option 3: Download from nodejs.org**
+- Visit: https://nodejs.org/
+- Download and install the LTS version
+- This includes npm automatically
+
+**Option 4: Quick repair attempt**
 ```bash
 cd frontend
 ./repair-npm.sh
 ```
-
-Common fixes:
-- **Reinstall Node.js**: Download from https://nodejs.org/ (includes npm)
-- **Use nvm**: Install Node Version Manager and use it:
-  ```bash
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-  nvm install 18
-  nvm use 18
-  ```
-- **Enable corepack**: If using Node.js 16.10+:
-  ```bash
-  corepack enable
-  corepack prepare npm@latest --activate
-  ```
-- **Homebrew** (macOS): `brew reinstall npm`
+Note: This may not provide a permanent fix - use the permanent fix script instead.
 
 ### Music not playing
 - Some browsers require user interaction before playing audio
