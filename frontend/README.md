@@ -12,6 +12,40 @@ A beautiful, contemporary mid-century modern-inspired frontend for the AI Mental
 
 ## 🚀 Getting Started
 
+### Quick Setup (Automated)
+
+**Option 1: Use the automated setup script** (Recommended)
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Run the setup script:
+   ```bash
+   ./setup.sh
+   ```
+
+   This script will:
+   - Check Node.js installation
+   - Detect and repair npm if needed
+   - Install all dependencies
+   - Verify backend configuration
+   - Provide instructions for next steps
+
+3. If npm needs repair, run the repair script first:
+   ```bash
+   ./repair-npm.sh
+   ```
+
+4. Once setup is complete, start the application:
+   ```bash
+   ./start.sh
+   ```
+   This will start both frontend and backend servers automatically.
+
+### Manual Setup
+
 ### Prerequisites
 
 - Node.js 18+ and npm (or yarn/pnpm)
@@ -24,7 +58,13 @@ A beautiful, contemporary mid-century modern-inspired frontend for the AI Mental
    cd frontend
    ```
 
-2. Install dependencies:
+2. **If npm is not working**, repair it first:
+   ```bash
+   ./repair-npm.sh
+   ```
+   Or manually reinstall Node.js from https://nodejs.org/
+
+3. Install dependencies:
    ```bash
    npm install
    # or
@@ -51,6 +91,22 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 For production, set this to your deployed backend URL.
 
 ### Running the Application
+
+**Option 1: Use the start script** (Easiest)
+
+From the frontend directory:
+```bash
+./start.sh
+```
+
+This script will:
+- Check dependencies and install if needed
+- Start the backend server (if `uv` is available)
+- Start the frontend development server
+- Show you the URLs and log locations
+- Handle cleanup when you press Ctrl+C
+
+**Option 2: Manual start**
 
 1. **Start the backend** (from project root):
    ```bash
@@ -98,6 +154,28 @@ The music player is located in the bottom-right corner of the screen.
 
 See `public/music/README.md` for detailed recommendations and sources.
 
+## 🛠️ Setup Scripts
+
+The frontend includes several helpful scripts to automate setup and running:
+
+- **`setup.sh`** - Comprehensive setup script that:
+  - Checks Node.js installation
+  - Detects and repairs npm issues
+  - Installs dependencies
+  - Verifies backend configuration
+  - Provides detailed feedback and instructions
+
+- **`repair-npm.sh`** - Dedicated npm repair script that:
+  - Attempts multiple methods to fix broken npm
+  - Tries corepack, curl install, Homebrew, and more
+  - Provides manual repair instructions if automatic repair fails
+
+- **`start.sh`** - Convenient start script that:
+  - Starts both backend and frontend servers
+  - Checks dependencies automatically
+  - Shows log locations
+  - Handles cleanup on exit
+
 ## 🏗️ Project Structure
 
 ```
@@ -111,6 +189,9 @@ frontend/
 │   └── BackgroundMusic.tsx # Music player component
 ├── public/
 │   └── music/              # Background music files (optional)
+├── setup.sh                # Automated setup script
+├── repair-npm.sh           # npm repair script
+├── start.sh                # Start both servers script
 ├── package.json            # Dependencies and scripts
 ├── next.config.js          # Next.js configuration
 ├── tsconfig.json           # TypeScript configuration
@@ -192,6 +273,29 @@ CORS is already configured on the backend to allow frontend requests.
 
 ## 🐛 Troubleshooting
 
+### npm not working
+
+If you encounter npm issues, run the repair script:
+```bash
+cd frontend
+./repair-npm.sh
+```
+
+Common fixes:
+- **Reinstall Node.js**: Download from https://nodejs.org/ (includes npm)
+- **Use nvm**: Install Node Version Manager and use it:
+  ```bash
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+  nvm install 18
+  nvm use 18
+  ```
+- **Enable corepack**: If using Node.js 16.10+:
+  ```bash
+  corepack enable
+  corepack prepare npm@latest --activate
+  ```
+- **Homebrew** (macOS): `brew reinstall npm`
+
 ### Music not playing
 - Some browsers require user interaction before playing audio
 - Click the play button to start music
@@ -203,11 +307,13 @@ CORS is already configured on the backend to allow frontend requests.
 - Check `NEXT_PUBLIC_API_URL` environment variable
 - Ensure CORS is properly configured on backend
 - Check browser console for detailed error messages
+- Check backend logs: `tail -f /tmp/backend.log` (if using start.sh)
 
 ### Build errors
 - Clear `.next` folder: `rm -rf .next`
 - Delete `node_modules` and reinstall: `rm -rf node_modules && npm install`
 - Check Node.js version: `node --version` (should be 18+)
+- Run setup script again: `./setup.sh`
 
 ## 📝 Notes
 
