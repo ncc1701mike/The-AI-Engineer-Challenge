@@ -92,7 +92,25 @@ For production, set this to your deployed backend URL.
 
 ### Running the Application
 
-**Option 1: Use the start script** (Easiest)
+**Important: Terminal Setup**
+
+Since the backend runs continuously and blocks the terminal, you have two options:
+
+**Option 1: Backend already running in another terminal** (Recommended)
+- Open a **new terminal window/tab**
+- Navigate to the frontend directory
+- Run the frontend-only script:
+  ```bash
+  cd frontend
+  ./start-frontend.sh
+  ```
+  This will:
+  - Check if dependencies are installed
+  - Verify backend is accessible
+  - Start the frontend development server
+  - Run in the foreground (you can see the logs)
+
+**Option 2: Start both servers together**
 
 From the frontend directory:
 ```bash
@@ -101,12 +119,14 @@ From the frontend directory:
 
 This script will:
 - Check dependencies and install if needed
-- Start the backend server (if `uv` is available)
+- Start the backend server in the background (if `uv` is available)
 - Start the frontend development server
 - Show you the URLs and log locations
-- Handle cleanup when you press Ctrl+C
+- Handle cleanup when you press Ctrl+C (stops both servers)
 
-**Option 2: Manual start**
+> **Note:** If you already have the backend running, you can't use this option - use Option 1 instead.
+
+**Option 3: Manual start** (Separate terminals)
 
 1. **Start the backend** (from project root):
    ```bash
@@ -170,11 +190,18 @@ The frontend includes several helpful scripts to automate setup and running:
   - Tries corepack, curl install, Homebrew, and more
   - Provides manual repair instructions if automatic repair fails
 
-- **`start.sh`** - Convenient start script that:
-  - Starts both backend and frontend servers
+- **`start.sh`** - Start both servers script that:
+  - Starts both backend and frontend servers together
+  - Runs backend in background
   - Checks dependencies automatically
   - Shows log locations
-  - Handles cleanup on exit
+  - Handles cleanup on exit (stops both)
+
+- **`start-frontend.sh`** - Frontend-only start script that:
+  - Starts only the frontend (when backend is already running)
+  - Checks if backend is accessible
+  - Verifies dependencies
+  - Perfect for when backend is in another terminal
 
 ## 🏗️ Project Structure
 
@@ -192,6 +219,7 @@ frontend/
 ├── setup.sh                # Automated setup script
 ├── repair-npm.sh           # npm repair script
 ├── start.sh                # Start both servers script
+├── start-frontend.sh       # Start frontend only (backend running elsewhere)
 ├── package.json            # Dependencies and scripts
 ├── next.config.js          # Next.js configuration
 ├── tsconfig.json           # TypeScript configuration
