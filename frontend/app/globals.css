@@ -27,6 +27,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: var(--text-dark);
   overflow-x: hidden;
+  font-size: 1.15rem;
+}
+
+/* Base font size increase */
+* {
+  font-size: inherit;
 }
 
 /* Animated gradient background - blue and silver with glowing, shifting effect */
@@ -183,8 +189,8 @@ body {
     0 0 0 1px rgba(255, 255, 255, 0.2) inset;
   padding: 0;
   margin: 2rem auto;
-  max-width: 800px;
-  min-height: 600px;
+  max-width: 920px;
+  min-height: 690px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -289,17 +295,40 @@ body {
 
 /* Typography with mid-century modern flair */
 .chat-container h1 {
-  font-size: 2.5rem;
+  font-size: 2.875rem;
   font-weight: 600;
   color: var(--text-dark);
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.02em;
   position: relative;
   z-index: 1;
+  text-shadow: 
+    0 0 10px rgba(74, 144, 226, 0.5),
+    0 0 20px rgba(107, 182, 255, 0.4),
+    0 0 30px rgba(135, 206, 235, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: titleGlow 3s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(74, 144, 226, 0.5),
+      0 0 20px rgba(107, 182, 255, 0.4),
+      0 0 30px rgba(135, 206, 235, 0.3),
+      0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    text-shadow: 
+      0 0 15px rgba(74, 144, 226, 0.7),
+      0 0 25px rgba(107, 182, 255, 0.6),
+      0 0 35px rgba(135, 206, 235, 0.5),
+      0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .chat-container .subtitle {
-  font-size: 1.1rem;
+  font-size: 1.265rem;
   color: var(--dark-blue);
   margin: 0 0 0 0;
   font-weight: 300;
@@ -324,14 +353,15 @@ body {
 }
 
 .message {
-  padding: 1rem 1.25rem;
+  padding: 1.15rem 1.4375rem;
   border-radius: 16px;
   max-width: 80%;
   word-wrap: break-word;
-  line-height: 1.6;
+  line-height: 1.725;
   animation: fadeIn 0.3s ease-in;
   position: relative;
   z-index: 1;
+  font-size: 1.15rem;
 }
 
 @keyframes fadeIn {
@@ -382,17 +412,17 @@ body {
 
 .input-field {
   width: 100%;
-  padding: 1rem 1.25rem;
+  padding: 1.15rem 1.4375rem;
   border: 2px solid var(--light-silver);
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-family: inherit;
   background: rgba(255, 255, 255, 0.95);
   color: var(--text-dark);
   transition: all 0.3s ease;
   resize: none;
-  min-height: 60px;
-  max-height: 150px;
+  min-height: 69px;
+  max-height: 172px;
 }
 
 .input-field:focus {
@@ -402,17 +432,17 @@ body {
 }
 
 .send-button {
-  padding: 1rem 2rem;
+  padding: 1.15rem 2.3rem;
   background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
   color: var(--white);
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-  min-width: 100px;
+  min-width: 115px;
 }
 
 .send-button:hover:not(:disabled) {
@@ -447,14 +477,14 @@ body {
   color: var(--primary-blue);
   border: 2px solid rgba(74, 144, 226, 0.2);
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: 57.5px;
+  height: 57.5px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1.4rem;
+  font-size: 1.61rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -482,10 +512,11 @@ body {
 /* Loading indicator */
 .loading {
   display: inline-flex;
-  gap: 0.5rem;
+  gap: 0.575rem;
   align-items: center;
   color: var(--dark-blue);
   font-style: italic;
+  font-size: 1.15rem;
 }
 
 .loading-dots {
@@ -554,7 +585,7 @@ body {
   }
 
   .chat-container h1 {
-    font-size: 2rem;
+    font-size: 2.3rem;
   }
 
   .messages-container {
@@ -576,9 +607,9 @@ body {
   }
 
   .music-button {
-    width: 45px;
-    height: 45px;
-    font-size: 1.2rem;
+    width: 51.75px;
+    height: 51.75px;
+    font-size: 1.38rem;
   }
 }
 
