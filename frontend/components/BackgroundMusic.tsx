@@ -26,72 +26,80 @@ export default function BackgroundMusic() {
     audio.muted = false; // Not muted - try to play with sound
     audio.preload = 'auto';
     
-    // Set up error handling for source loading
+    // Set up error handling for source loading with working URLs
     let currentSourceIndex = 0;
     const audioSources = [
       '/music/ambient-background.mp3',
       'https://archive.org/download/MinecraftVolumeAlpha/03%20Subwoofer%20Lullaby.mp3',
+      'https://ia800504.us.archive.org/10/items/MinecraftVolumeAlpha/03%20Subwoofer%20Lullaby.mp3',
       'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
     ];
 
-    const tryNextSource = () => {
-      if (currentSourceIndex < audioSources.length) {
-        audio.src = audioSources[currentSourceIndex];
-        currentSourceIndex++;
-        audio.load();
-        
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              console.log('Audio autoplay started successfully');
-              // Ensure not muted
+    const attemptPlay = async (src: string) => {
+      audio.src = src;
+      audio.load();
+      
+      // Try unmuted autoplay first
+      try {
+        await audio.play();
+        console.log('Audio autoplay started with sound');
+        audio.muted = false;
+        return true;
+      } catch (error) {
+        // Autoplay with sound blocked, try muted
+        console.log('Autoplay with sound blocked, trying muted approach');
+        audio.muted = true;
+        try {
+          await audio.play();
+          console.log('Audio started muted, will unmute on first interaction');
+          // Unmute on any user interaction
+          const unmuteOnInteraction = () => {
+            if (!isMuted && audio.muted) {
               audio.muted = false;
-            })
-            .catch((error) => {
-              console.log('Autoplay blocked, trying muted approach:', error);
-              // Try muted autoplay as fallback
-              audio.muted = true;
-              audio.play()
-                .then(() => {
-                  console.log('Audio started muted, will unmute on first interaction');
-                  // Unmute on any user interaction
-                  const unmuteOnInteraction = () => {
-                    if (!isMuted && audio.muted) {
-                      audio.muted = false;
-                      console.log('Audio unmuted on user interaction');
-                    }
-                    document.removeEventListener('click', unmuteOnInteraction);
-                    document.removeEventListener('keydown', unmuteOnInteraction);
-                    document.removeEventListener('touchstart', unmuteOnInteraction);
-                  };
-                  document.addEventListener('click', unmuteOnInteraction, { once: true });
-                  document.addEventListener('keydown', unmuteOnInteraction, { once: true });
-                  document.addEventListener('touchstart', unmuteOnInteraction, { once: true });
-                })
-                .catch(() => {
-                  if (currentSourceIndex < audioSources.length) {
-                    // Try next source
-                    tryNextSource();
-                  } else {
-                    console.error('All audio sources failed');
-                  }
-                });
-            });
+              console.log('Audio unmuted on user interaction');
+            }
+            document.removeEventListener('click', unmuteOnInteraction);
+            document.removeEventListener('keydown', unmuteOnInteraction);
+            document.removeEventListener('touchstart', unmuteOnInteraction);
+          };
+          document.addEventListener('click', unmuteOnInteraction, { once: true });
+          document.addEventListener('keydown', unmuteOnInteraction, { once: true });
+          document.addEventListener('touchstart', unmuteOnInteraction, { once: true });
+          return true;
+        } catch (mutedError) {
+          console.log('Muted autoplay also failed:', mutedError);
+          return false;
+        }
+      }
+    };
+
+    const tryNextSource = async () => {
+      if (currentSourceIndex < audioSources.length) {
+        const src = audioSources[currentSourceIndex];
+        currentSourceIndex++;
+        const success = await attemptPlay(src);
+        if (!success && currentSourceIndex < audioSources.length) {
+          // Try next source after a brief delay
+          setTimeout(tryNextSource, 500);
         }
       }
     };
 
     // Handle source loading errors
-    audio.addEventListener('error', () => {
-      console.log('Audio source error, trying next source...');
+    audio.addEventListener('error', (e) => {
+      console.log('Audio source loading error, trying next source...', e);
       if (currentSourceIndex < audioSources.length) {
-        tryNextSource();
+        setTimeout(tryNextSource, 500);
       }
     });
 
-    // Start with first source
-    tryNextSource();
+    // Handle successful load
+    audio.addEventListener('canplaythrough', () => {
+      console.log('Audio loaded successfully');
+    });
+
+    // Start with first source after a brief delay to ensure component is mounted
+    setTimeout(tryNextSource, 200);
   }, [isMuted]);
 
   const toggleMute = () => {
