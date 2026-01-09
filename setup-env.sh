@@ -31,15 +31,29 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_ROOT="$SCRIPT_DIR"
 ENV_FILE="$PROJECT_ROOT/.env"
 
+# Check if we're in an interactive terminal
+if [ ! -t 0 ]; then
+    # Not interactive, try to read from /dev/tty if available
+    if [ -r /dev/tty ]; then
+        exec < /dev/tty
+    else
+        print_error "This script requires an interactive terminal"
+        exit 1
+    fi
+fi
+
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}  Setup .env File for OpenAI API Key${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
 
 # Check if .env already exists
 if [ -f "$ENV_FILE" ]; then
     print_warning ".env file already exists"
     echo ""
-    read -p "Do you want to update it? (y/n): " update_env
+    echo -n "Do you want to update it? (y/n): "
+    read -r update_env
+    echo ""
     
     if [[ ! "$update_env" =~ ^[Yy]$ ]]; then
         print_info "Keeping existing .env file"
@@ -51,7 +65,9 @@ fi
 print_info "Enter your OpenAI API key"
 print_info "You can get it from: https://platform.openai.com/api-keys"
 echo ""
-read -p "OpenAI API Key: " api_key
+echo -n "OpenAI API Key: "
+read -r api_key
+echo ""
 
 if [ -z "$api_key" ]; then
     print_error "API key cannot be empty"
@@ -61,7 +77,9 @@ fi
 # Validate API key format (starts with sk-)
 if [[ ! "$api_key" =~ ^sk- ]]; then
     print_warning "API key doesn't start with 'sk-'. Continue anyway? (y/n)"
-    read -p "Continue: " continue_key
+    echo -n "Continue: "
+    read -r continue_key
+    echo ""
     if [[ ! "$continue_key" =~ ^[Yy]$ ]]; then
         print_info "Setup cancelled"
         exit 0
