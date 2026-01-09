@@ -110,20 +110,11 @@ export default function BackgroundMusic() {
     }
   };
 
-  const toggleMute = () => {
-    if (audioRef.current) {
-      const newMutedState = !isMuted;
-      audioRef.current.muted = newMutedState;
-      setIsMuted(newMutedState);
-    }
-  };
-
   return (
     <>
       <audio
         ref={audioRef}
         preload="auto"
-        autoPlay
         loop
       >
         {/* Audio sources will be set programmatically for better error handling */}
