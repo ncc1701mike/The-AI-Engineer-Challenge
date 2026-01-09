@@ -14,6 +14,31 @@
 
 In this repository, we'll walk you through the steps to create a LLM (Large Language Model) powered application with a vibe-coded frontend!
 
+## 🚀 Quick Start
+
+**The easiest way to get started:**
+
+1. Set your OpenAI API key (one time):
+   ```bash
+   # Option 1: Create a .env file in project root
+   echo "OPENAI_API_KEY=sk-..." > .env
+   
+   # Option 2: Export in your terminal
+   export OPENAI_API_KEY=sk-...
+   ```
+
+2. Run the unified start script:
+   ```bash
+   ./start.sh
+   ```
+
+That's it! The script will:
+- ✅ Check if backend is running (if not, starts it in a new terminal)
+- ✅ Start the frontend automatically
+- ✅ Open http://localhost:3000 in your browser
+
+**No need to manage multiple terminals manually!**
+
 Are you ready? Let's get started!
 
 <details>

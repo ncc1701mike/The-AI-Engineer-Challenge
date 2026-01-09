@@ -105,22 +105,53 @@ else
         exit 1
     fi
     
+    # Check for .env file and load OPENAI_API_KEY if available
+    if [ -f "$PROJECT_ROOT/.env" ]; then
+        print_info "Found .env file, loading environment variables..."
+        export $(grep -v '^#' "$PROJECT_ROOT/.env" | grep OPENAI_API_KEY | xargs)
+    fi
+    
     # Check if OPENAI_API_KEY is set
     if [ -z "$OPENAI_API_KEY" ]; then
         print_warning "OPENAI_API_KEY is not set"
         print_info "The backend requires an OpenAI API key to run."
         echo ""
-        read -p "Enter your OPENAI_API_KEY (or press Enter to skip): " api_key_input
+        print_info "You can:"
+        echo "  1. Create a .env file in the project root with:"
+        echo "     OPENAI_API_KEY=sk-..."
+        echo ""
+        echo "  2. Or enter it now (will be used for this session only):"
+        echo ""
+        read -p "Enter your OPENAI_API_KEY (or press Enter to exit): " api_key_input
         
         if [ -n "$api_key_input" ]; then
             export OPENAI_API_KEY="$api_key_input"
             print_success "API key set for this session"
+            
+            # Offer to save to .env
+            read -p "Save to .env file for future use? (y/n): " save_env
+            if [[ "$save_env" =~ ^[Yy]$ ]]; then
+                if [ ! -f "$PROJECT_ROOT/.env" ]; then
+                    echo "OPENAI_API_KEY=$api_key_input" > "$PROJECT_ROOT/.env"
+                    print_success "Saved to .env file"
+                else
+                    # Update existing .env
+                    if grep -q "OPENAI_API_KEY" "$PROJECT_ROOT/.env"; then
+                        sed -i.bak "s/OPENAI_API_KEY=.*/OPENAI_API_KEY=$api_key_input/" "$PROJECT_ROOT/.env"
+                        rm -f "$PROJECT_ROOT/.env.bak"
+                    else
+                        echo "OPENAI_API_KEY=$api_key_input" >> "$PROJECT_ROOT/.env"
+                    fi
+                    print_success "Updated .env file"
+                fi
+            fi
         else
             print_error "Cannot start backend without OPENAI_API_KEY"
-            print_info "Please set it and try again:"
-            echo "    export OPENAI_API_KEY=sk-..."
+            print_info "Please create a .env file or set the environment variable and try again"
             exit 1
         fi
+    else
+        print_success "OPENAI_API_KEY found"
     fi
     
     # Determine OS and start backend in new terminal
@@ -133,42 +164,65 @@ else
         
         # Create a temporary script to run backend
         BACKEND_SCRIPT="/tmp/start_backend_$$.sh"
-        cat > "$BACKEND_SCRIPT" << EOF
+        
+        # Load .env file if it exists
+        ENV_LOAD=""
+        if [ -f "$PROJECT_ROOT/.env" ]; then
+            ENV_LOAD="export \$(grep -v '^#' '$PROJECT_ROOT/.env' | grep OPENAI_API_KEY | xargs)"
+        fi
+        
+        cat > "$BACKEND_SCRIPT" << SCRIPT_EOF
 #!/bin/bash
 cd "$BACKEND_DIR"
+$ENV_LOAD
 export OPENAI_API_KEY="$OPENAI_API_KEY"
-echo "Starting backend server..."
-echo "Backend will run on http://localhost:8000"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  Backend Server Starting"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "Backend URL: http://localhost:8000"
+echo "API Docs:    http://localhost:8000/docs"
+echo ""
+echo "Press Ctrl+C to stop the backend"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000
 echo ""
-echo "Backend stopped. Press any key to close this window..."
-read -n 1
-EOF
+echo "Backend stopped. This window will close in 5 seconds..."
+sleep 5
+SCRIPT_EOF
         chmod +x "$BACKEND_SCRIPT"
         
         # Open in new Terminal window
-        osascript << EOF
+        osascript << APPLESCRIPT_EOF
 tell application "Terminal"
     do script "$BACKEND_SCRIPT"
     activate
 end tell
-EOF
+APPLESCRIPT_EOF
         
         print_success "Backend starting in new Terminal window"
         
     elif [[ "$OS" == "Linux" ]]; then
         # Linux - try to detect desktop environment
+        ENV_LOAD=""
+        if [ -f "$PROJECT_ROOT/.env" ]; then
+            ENV_LOAD="export \$(grep -v '^#' '$PROJECT_ROOT/.env' | grep OPENAI_API_KEY | xargs) && "
+        fi
+        
         if command -v gnome-terminal >/dev/null 2>&1; then
             print_info "Starting backend in new gnome-terminal window..."
-            gnome-terminal -- bash -c "cd '$BACKEND_DIR' && export OPENAI_API_KEY='$OPENAI_API_KEY' && echo 'Starting backend server...' && uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000; exec bash" &
+            gnome-terminal -- bash -c "cd '$BACKEND_DIR' && ${ENV_LOAD}export OPENAI_API_KEY='$OPENAI_API_KEY' && echo 'Backend Server Starting...' && echo 'URL: http://localhost:8000' && uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000; exec bash" &
         elif command -v xterm >/dev/null 2>&1; then
             print_info "Starting backend in new xterm window..."
-            xterm -e "cd '$BACKEND_DIR' && export OPENAI_API_KEY='$OPENAI_API_KEY' && echo 'Starting backend server...' && uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000" &
+            xterm -e "cd '$BACKEND_DIR' && ${ENV_LOAD}export OPENAI_API_KEY='$OPENAI_API_KEY' && echo 'Backend Server Starting...' && uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000; bash" &
         else
             # Fallback: start in background in current terminal
             print_warning "Could not detect terminal. Starting backend in background..."
             cd "$BACKEND_DIR"
+            if [ -f "$PROJECT_ROOT/.env" ]; then
+                export $(grep -v '^#' "$PROJECT_ROOT/.env" | grep OPENAI_API_KEY | xargs)
+            fi
             export OPENAI_API_KEY="$OPENAI_API_KEY"
             uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
             BACKEND_PID=$!
@@ -177,6 +231,9 @@ EOF
         # Windows (Git Bash or WSL) - start in background
         print_info "Starting backend in background..."
         cd "$BACKEND_DIR"
+        if [ -f "$PROJECT_ROOT/.env" ]; then
+            export $(grep -v '^#' "$PROJECT_ROOT/.env" | grep OPENAI_API_KEY | xargs)
+        fi
         export OPENAI_API_KEY="$OPENAI_API_KEY"
         uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
         BACKEND_PID=$!
