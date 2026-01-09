@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import BackgroundMusic from '@/components/BackgroundMusic';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -140,6 +141,8 @@ export default function ChatInterface() {
           Send
         </button>
       </div>
+      
+      <BackgroundMusic />
     </div>
   );
 }
