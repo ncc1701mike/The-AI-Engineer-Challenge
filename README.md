@@ -4,9 +4,9 @@
        height="auto"/>
 </p>
 
-<h1 align="center">👋 Welcome to the AI Engineer Challenge</h1>
+<h1 align="center">👋 Welcome to my AI Engineer Challenge Project</h1>
 
-<h2 align="center">🤖 Your First Vibe Coding LLM Application</h2>
+<h2 align="center">🤖 My First Vibe Coding LLM Application</h2>
 
 ---
 
