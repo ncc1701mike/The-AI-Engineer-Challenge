@@ -105,6 +105,18 @@ else
         exit 1
     fi
     
+    # Check if backend dependencies are installed
+    if [ ! -d "$BACKEND_DIR/.venv" ]; then
+        print_warning "Backend dependencies not installed"
+        print_info "Installing backend dependencies with uv sync..."
+        cd "$BACKEND_DIR"
+        uv sync || {
+            print_error "Failed to install backend dependencies"
+            exit 1
+        }
+        print_success "Backend dependencies installed"
+    fi
+    
     # Check for .env file and load OPENAI_API_KEY if available
     if [ -f "$PROJECT_ROOT/.env" ]; then
         print_info "Found .env file, loading environment variables..."
