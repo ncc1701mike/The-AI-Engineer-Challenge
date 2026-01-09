@@ -79,10 +79,12 @@ export default function ChatInterface() {
 
   return (
     <div className="chat-container">
-      <h1>AI Mental Coach</h1>
-      <p className="subtitle">
-        Your supportive companion for stress, motivation, habits, and confidence
-      </p>
+      <div className="chat-header">
+        <h1>AI Mental Coach</h1>
+        <p className="subtitle">
+          Your supportive companion for stress, motivation, habits, and confidence
+        </p>
+      </div>
 
       <div className="messages-container">
         {messages.length === 0 && (

@@ -13,94 +13,102 @@ import { useState, useRef, useEffect } from 'react';
  * Autoplays on mount with only a mute/unmute control.
  */
 export default function BackgroundMusic() {
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const sourceIndexRef = useRef(0);
 
-  // Initialize audio and attempt immediate autoplay (not muted)
+  // Audio sources - try in order if one fails
+  const audioSources = [
+    '/music/ambient-background.mp3',
+    'https://archive.org/download/MinecraftVolumeAlpha/03%20Subwoofer%20Lullaby.mp3',
+    'https://ia800504.us.archive.org/10/items/MinecraftVolumeAlpha/03%20Subwoofer%20Lullaby.mp3',
+    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+  ];
+
+  // Initialize audio settings
   useEffect(() => {
-    if (!audioRef.current) return;
+    if (audioRef.current) {
+      audioRef.current.volume = 0.25; // Set to 25% volume for subtle background
+      audioRef.current.loop = true;
+      audioRef.current.preload = 'auto';
+    }
+  }, []);
 
+  // Try loading next source if current one fails
+  const tryNextSource = () => {
+    if (audioRef.current && sourceIndexRef.current < audioSources.length) {
+      const src = audioSources[sourceIndexRef.current];
+      sourceIndexRef.current++;
+      audioRef.current.src = src;
+      audioRef.current.load();
+    }
+  };
+
+  // Handle audio loading errors
+  useEffect(() => {
     const audio = audioRef.current;
-    audio.volume = 0.25; // Set to 25% volume for subtle background
-    audio.loop = true;
-    audio.muted = false; // Not muted - try to play with sound
-    audio.preload = 'auto';
-    
-    // Set up error handling for source loading with working URLs
-    let currentSourceIndex = 0;
-    const audioSources = [
-      '/music/ambient-background.mp3',
-      'https://archive.org/download/MinecraftVolumeAlpha/03%20Subwoofer%20Lullaby.mp3',
-      'https://ia800504.us.archive.org/10/items/MinecraftVolumeAlpha/03%20Subwoofer%20Lullaby.mp3',
-      'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
-    ];
+    if (!audio) return;
 
-    const attemptPlay = async (src: string) => {
-      audio.src = src;
-      audio.load();
-      
-      // Try unmuted autoplay first
-      try {
-        await audio.play();
-        console.log('Audio autoplay started with sound');
-        audio.muted = false;
-        return true;
-      } catch (error) {
-        // Autoplay with sound blocked, try muted
-        console.log('Autoplay with sound blocked, trying muted approach');
-        audio.muted = true;
-        try {
-          await audio.play();
-          console.log('Audio started muted, will unmute on first interaction');
-          // Unmute on any user interaction
-          const unmuteOnInteraction = () => {
-            if (!isMuted && audio.muted) {
-              audio.muted = false;
-              console.log('Audio unmuted on user interaction');
-            }
-            document.removeEventListener('click', unmuteOnInteraction);
-            document.removeEventListener('keydown', unmuteOnInteraction);
-            document.removeEventListener('touchstart', unmuteOnInteraction);
-          };
-          document.addEventListener('click', unmuteOnInteraction, { once: true });
-          document.addEventListener('keydown', unmuteOnInteraction, { once: true });
-          document.addEventListener('touchstart', unmuteOnInteraction, { once: true });
-          return true;
-        } catch (mutedError) {
-          console.log('Muted autoplay also failed:', mutedError);
-          return false;
-        }
-      }
-    };
-
-    const tryNextSource = async () => {
-      if (currentSourceIndex < audioSources.length) {
-        const src = audioSources[currentSourceIndex];
-        currentSourceIndex++;
-        const success = await attemptPlay(src);
-        if (!success && currentSourceIndex < audioSources.length) {
-          // Try next source after a brief delay
-          setTimeout(tryNextSource, 500);
-        }
-      }
-    };
-
-    // Handle source loading errors
-    audio.addEventListener('error', (e) => {
-      console.log('Audio source loading error, trying next source...', e);
-      if (currentSourceIndex < audioSources.length) {
+    const handleError = () => {
+      console.log('Audio source error, trying next source...');
+      if (sourceIndexRef.current < audioSources.length) {
         setTimeout(tryNextSource, 500);
       }
-    });
+    };
 
-    // Handle successful load
-    audio.addEventListener('canplaythrough', () => {
-      console.log('Audio loaded successfully');
-    });
+    audio.addEventListener('error', handleError);
+    return () => {
+      audio.removeEventListener('error', handleError);
+    };
+  }, []);
 
-    // Start with first source after a brief delay to ensure component is mounted
-    setTimeout(tryNextSource, 200);
-  }, [isMuted]);
+  // Start with first source
+  useEffect(() => {
+    if (audioRef.current && sourceIndexRef.current === 0) {
+      tryNextSource();
+    }
+  }, []);
+
+  const handlePlay = async () => {
+    if (audioRef.current) {
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+        console.log('Music started');
+      } catch (error) {
+        console.error('Error playing audio:', error);
+        // Try next source if play fails
+        if (sourceIndexRef.current < audioSources.length) {
+          tryNextSource();
+          setTimeout(handlePlay, 500);
+        }
+      }
+    }
+  };
+
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      handlePause();
+    } else {
+      handlePlay();
+    }
+  };
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      const newMutedState = !isMuted;
+      audioRef.current.muted = newMutedState;
+      setIsMuted(newMutedState);
+    }
+  };
 
   const toggleMute = () => {
     if (audioRef.current) {
@@ -124,13 +132,23 @@ export default function BackgroundMusic() {
 
       <div className="music-controls">
         <button
-          className="music-button"
-          onClick={toggleMute}
-          aria-label={isMuted ? 'Unmute music' : 'Mute music'}
-          title={isMuted ? 'Unmute music' : 'Mute music'}
+          className="music-button play-button"
+          onClick={togglePlayPause}
+          aria-label={isPlaying ? 'Pause music' : 'Play music'}
+          title={isPlaying ? 'Pause music' : 'Play music'}
         >
-          {isMuted ? '🔇' : '🔊'}
+          {isPlaying ? '⏸' : '▶'}
         </button>
+        {isPlaying && (
+          <button
+            className="music-button"
+            onClick={toggleMute}
+            aria-label={isMuted ? 'Unmute music' : 'Mute music'}
+            title={isMuted ? 'Unmute music' : 'Mute music'}
+          >
+            {isMuted ? '🔇' : '🔊'}
+          </button>
+        )}
       </div>
     </>
   );
