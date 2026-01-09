@@ -88,9 +88,10 @@ Got everything in place? Let's move on!
 
 1. Install the [`uv`](https://github.com/astral-sh/uv) package manager (`pip install uv`). `uv` will download and manage Python 3.12 for you the first time you run a project command.
 2. From the project root, install dependencies with `uv sync`. This creates `.venv/` (and fetches Python 3.12 automatically if needed).
-3. Set your OpenAI API key in the shell before running the server, for example `export OPENAI_API_KEY=sk-...`.
-4. Start the backend directly from the project root with `uv run uvicorn api.index:app --reload`. The server will run on `http://localhost:8000` with auto-reload enabled for development.
-5. Additional backend details live in `api/README.md`.
+3. Set your OpenAI API key (the start script will prompt you if not set): `export OPENAI_API_KEY=sk-...`.
+4. **Quick Start**: Run `./start.sh` from the project root - it handles everything automatically!
+5. **Manual Start**: Start the backend directly from the project root with `uv run uvicorn api.index:app --reload`. The server will run on `http://localhost:8000` with auto-reload enabled for development.
+6. Additional backend details live in `api/README.md`.
 
 </details>
 
@@ -128,7 +129,16 @@ While it is a bit counter-intuitive to set things up before jumping into vibe-co
 
 3. Ask Cursor to create a frontend for your application. Iterate as much as you like!
 
-4. Run the frontend using the instructions Cursor provided. 
+4. **Run the application** using the unified start script:
+   ```bash
+   ./start.sh
+   ```
+   This script automatically:
+   - Checks if backend is running
+   - Starts backend in a new terminal if needed
+   - Waits for backend to be ready
+   - Starts the frontend
+   - Opens http://localhost:3000 in your browser
 
 > NOTE: If you run into any errors, copy and paste them back into the Cursor chat window - and ask Cursor to fix them!
 
