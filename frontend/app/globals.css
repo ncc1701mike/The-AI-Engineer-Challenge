@@ -175,7 +175,7 @@ body {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem 2rem 3rem 2rem;
   position: relative;
   z-index: 10;
 }
@@ -188,14 +188,14 @@ body {
     0 8px 32px rgba(0, 0, 0, 0.1),
     0 0 0 1px rgba(255, 255, 255, 0.2) inset;
   padding: 0;
-  margin: 2rem auto;
+  margin: 1rem auto 0 auto;
   max-width: 920px;
   min-height: 690px;
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: visible;
-  padding-bottom: 80px;
+  padding-bottom: 90px;
 }
 
 /* Gradient animations container - needs overflow hidden */
@@ -462,7 +462,7 @@ body {
 /* Music player - play button and mute control */
 .music-controls {
   position: absolute;
-  bottom: -70px;
+  bottom: -75px;
   right: 0;
   z-index: 100;
   display: flex;
@@ -570,8 +570,12 @@ body {
 
 /* Responsive design */
 @media (max-width: 768px) {
+  .container {
+    padding: 1rem 1rem 2.5rem 1rem;
+  }
+  
   .chat-container {
-    margin: 1rem;
+    margin: 0.5rem auto 0 auto;
     min-height: 500px;
   }
 
