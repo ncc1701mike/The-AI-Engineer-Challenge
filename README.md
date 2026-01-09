@@ -20,10 +20,14 @@ In this repository, we'll walk you through the steps to create a LLM (Large Lang
 
 1. Set your OpenAI API key (one time):
    ```bash
-   # Option 1: Create a .env file in project root
+   # Option 1: Use the setup script (recommended)
+   ./setup-env.sh
+   # Follow the prompts to enter your API key
+   
+   # Option 2: Create .env file manually
    echo "OPENAI_API_KEY=sk-..." > .env
    
-   # Option 2: Export in your terminal
+   # Option 3: Export in your terminal (not saved)
    export OPENAI_API_KEY=sk-...
    ```
 
