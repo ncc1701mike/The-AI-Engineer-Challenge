@@ -1,236 +1,322 @@
-<p align = "center" draggable=”false” ><img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719" 
-     width="200px"
-     height="auto"/>
+<p align="center" draggable="false">
+  <img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719" 
+       width="200px"
+       height="auto"/>
 </p>
 
+<h1 align="center">👋 Welcome to the AI Engineer Challenge</h1>
 
-## <h1 align="center" id="heading"> 👋 Welcome to the AI Engineer Challenge</h1>
+<h2 align="center">🤖 Your First Vibe Coding LLM Application</h2>
 
-## 🤖 Your First Vibe Coding LLM Application
+---
 
-> If you are a novice, and need a bit more help to get your dev environment off the ground, check out this [Setup Guide](docs/GIT_SETUP.md). This guide will walk you through the 'git' setup you need to get started.
+## 📱 About the Application
 
-> For additional context on LLM development environments and API key setup, you can also check out our [Interactive Dev Environment for LLM Development](https://github.com/AI-Maker-Space/Interactive-Dev-Environment-for-AI-Engineers).
+**AI Mental Coach** is a supportive mental health companion application designed for knowledge workers and founders. Built with modern web technologies, it provides a calming, beautiful interface for users to discuss stress, motivation, habits, and confidence with an AI-powered coach.
 
-In this repository, we'll walk you through the steps to create a LLM (Large Language Model) powered application with a vibe-coded frontend!
+### ✨ Key Features
+
+- **🎨 Beautiful Mid-Century Modern Design**: Contemporary aesthetic with animated blue/silver gradient backgrounds
+- **🎵 Soothing Ambient Soundscape**: Minecraft-inspired background music for enhanced focus and relaxation
+- **💬 Intelligent Mental Coaching**: AI-powered conversations that help with stress, motivation, habits, and confidence
+- **📱 Fully Responsive**: Works seamlessly on desktop, tablet, and mobile devices
+- **⚡ One-Command Startup**: Automated scripts handle backend and frontend setup
+- **🔒 Secure API Key Management**: Easy setup with interactive environment configuration
+
+### 🏗️ Tech Stack
+
+- **Backend**: FastAPI (Python) with OpenAI GPT integration
+- **Frontend**: Next.js (React) with TypeScript
+- **Package Management**: `uv` for Python, `npm` for Node.js
+- **Deployment Ready**: Configured for Vercel deployment
+
+---
 
 ## 🚀 Quick Start
 
-**The easiest way to get started:**
+**Get up and running in under 2 minutes:**
 
-1. Set your OpenAI API key (one time):
+### Prerequisites
+
+- Python 3.12+ (automatically managed by `uv`)
+- Node.js 18+ (for frontend)
+- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- Git installed
+
+### Installation & Setup
+
+1. **Clone the repository:**
    ```bash
-   # Option 1: Use the setup script (recommended)
-   ./setup-env.sh
-   # Follow the prompts to enter your API key
-   
-   # Option 2: Create .env file manually
-   echo "OPENAI_API_KEY=sk-..." > .env
-   
-   # Option 3: Export in your terminal (not saved)
-   export OPENAI_API_KEY=sk-...
+   git clone git@github.com:ncc1701mike/The-AI-Engineer-Challenge.git
+   cd The-AI-Engineer-Challenge
    ```
 
-2. Run the unified start script:
+2. **Set your OpenAI API key:**
+   ```bash
+   # Option 1: Use the interactive setup script (recommended)
+   ./setup-env.sh
+   
+   # Option 2: Create .env file manually
+   echo "OPENAI_API_KEY=sk-your-key-here" > .env
+   ```
+
+3. **Start the application:**
    ```bash
    ./start.sh
    ```
 
-That's it! The script will:
-- ✅ Check if backend is running (if not, starts it in a new terminal)
-- ✅ Start the frontend automatically
+That's it! The unified start script will:
+- ✅ Automatically check and install dependencies
+- ✅ Start the backend server (if not already running)
+- ✅ Launch the frontend development server
 - ✅ Open http://localhost:3000 in your browser
 
 **No need to manage multiple terminals manually!**
 
-Are you ready? Let's get started!
+---
 
-<details>
-  <summary>🖥️ Accessing "gpt-4.1-mini" (ChatGPT) like a developer</summary>
+## 📚 Documentation
 
-1. Head to [this notebook](https://colab.research.google.com/drive/1sT7rzY_Lb1_wS0ELI1JJfff0NUEcSD72?usp=sharing) and follow along with the instructions!
+### Technical Documentation
 
-2. Complete the notebook and try out your own system/assistant messages!
+- **[Backend API Documentation](api/README.md)**: Complete guide to the FastAPI backend, including endpoints, setup, and configuration
+- **[Frontend Documentation](frontend/README.md)**: Detailed frontend guide covering design, components, setup, and deployment
+- **[Testing Guide](TESTING_GUIDE.md)**: Comprehensive testing instructions for the unified start script and application components
 
-That's it! Head to the next step and start building your application!
+### Additional Resources
 
-</details>
+- **[Git Setup Guide](docs/GIT_SETUP.md)**: Detailed instructions for git configuration and best practices
+- **[Interactive Dev Environment](https://github.com/AI-Maker-Space/Interactive-Dev-Environment-for-AI-Engineers)**: Additional context on LLM development environments
 
+---
 
-<details>
-  <summary>🏗️ Forking & Cloning This Repository</summary>
+## 🏗️ Project Structure
 
-Before you begin, make sure you have:
+```
+The-AI-Engineer-Challenge/
+├── api/                    # Backend FastAPI application
+│   ├── index.py           # Main API endpoints
+│   └── README.md           # Backend documentation
+├── frontend/               # Next.js frontend application
+│   ├── app/                # Next.js app directory
+│   ├── components/         # React components
+│   ├── public/             # Static assets
+│   └── README.md           # Frontend documentation
+├── start.sh                # Unified startup script
+├── setup-env.sh            # API key setup script
+├── TESTING_GUIDE.md        # Testing documentation
+└── README.md               # This file
+```
 
-1. 👤 A GitHub account (you'll need to replace `YOUR_GITHUB_USERNAME` with your actual username)
-2. 🔧 Git installed on your local machine
-3. 💻 A code editor (like Cursor, VS Code, etc.)
-4. ⌨️ Terminal access (Mac/Linux) or Command Prompt/PowerShell (Windows)
-5. 🔑 A GitHub Personal Access Token (for authentication)
+---
 
-Got everything in place? Let's move on!
+## 🎯 How It Works
 
-1. Fork [this](https://github.com/AI-Maker-Space/The-AI-Engineer-Challenge) repo!
+### Backend (FastAPI)
 
-     ![image](https://i.imgur.com/bhjySNh.png)
+The backend provides a RESTful API that:
+- Accepts chat messages from the frontend
+- Processes requests through OpenAI's GPT model
+- Returns supportive, practical coaching responses
+- Handles CORS for frontend communication
 
-1. Clone your newly created repo.
+**Key Endpoints:**
+- `GET /api/health` - Health check endpoint
+- `POST /api/chat` - Main chat endpoint for AI conversations
 
-     ``` bash
-     # First, navigate to where you want the project folder to be created
-     cd PATH_TO_DESIRED_PARENT_DIRECTORY
+See [api/README.md](api/README.md) for complete API documentation.
 
-     # Then clone (this will create a new folder called The-AI-Engineer-Challenge)
-     git clone git@github.com:<YOUR GITHUB USERNAME>/The-AI-Engineer-Challenge.git
-     ```
+### Frontend (Next.js)
 
-     > Note: This command uses SSH. If you haven't set up SSH with GitHub, the command will fail. In that case, use HTTPS by replacing `git@github.com:` with `https://github.com/` - you'll then be prompted for your GitHub username and personal access token.
+The frontend provides:
+- Beautiful, responsive user interface
+- Real-time chat interface with message history
+- Animated gradient backgrounds
+- Background music controls
+- Seamless integration with the backend API
 
-2. Verify your git setup:
+See [frontend/README.md](frontend/README.md) for complete frontend documentation.
 
-     ```bash
-     # Check that your remote is set up correctly
-     git remote -v
+---
 
-     # Check the status of your repository
-     git status
+## 🛠️ Development
 
-     # See which branch you're on
-     git branch
-     ```
+### Manual Backend Start
 
-     <!-- > Need more help with git? Check out our [Detailed Git Setup Guide](docs/GIT_SETUP.md) for a comprehensive walkthrough of git configuration and best practices. -->
+If you prefer to run components separately:
 
-3. Open the freshly cloned repository inside Cursor!
+```bash
+# From project root
+uv sync                    # Install Python dependencies
+uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000
+```
 
-     ```bash
-     cd The-AI-Engineering-Challenge
-     cursor .
-     ```
+### Manual Frontend Start
 
-4. Check out the existing backend code found in `/api/index.py`
+```bash
+# From project root
+cd frontend
+npm install               # Install Node.js dependencies
+npm run dev              # Start development server
+```
 
-</details>
+### Environment Variables
 
-<details>
-  <summary>⚙️ Backend Setup with uv</summary>
+The application uses a `.env` file in the project root:
 
-1. Install the [`uv`](https://github.com/astral-sh/uv) package manager (`pip install uv`). `uv` will download and manage Python 3.12 for you the first time you run a project command.
-2. From the project root, install dependencies with `uv sync`. This creates `.venv/` (and fetches Python 3.12 automatically if needed).
-3. Set your OpenAI API key (the start script will prompt you if not set): `export OPENAI_API_KEY=sk-...`.
-4. **Quick Start**: Run `./start.sh` from the project root - it handles everything automatically!
-5. **Manual Start**: Start the backend directly from the project root with `uv run uvicorn api.index:app --reload`. The server will run on `http://localhost:8000` with auto-reload enabled for development.
-6. Additional backend details live in `api/README.md`.
+```env
+OPENAI_API_KEY=sk-your-key-here
+```
 
-</details>
+The `.env` file is gitignored for security. Use `./setup-env.sh` to create it interactively.
 
-<details>
-  <summary>🔥Setting Up for Vibe Coding Success </summary>
+---
 
-While it is a bit counter-intuitive to set things up before jumping into vibe-coding - it's important to remember that there exists a gradient betweeen AI-Assisted Development and Vibe-Coding. We're only reaching *slightly* into AI-Assisted Development for this challenge, but it's worth it!
+## 🚀 Deployment
 
-1. Check out the rules in `.cursor/rules/` and add theme-ing information like colour schemes in `frontend-rule.mdc`! You can be as expressive as you'd like in these rules!
-2. We're going to index some docs to make our application more likely to succeed. To do this - we're going to start with `CTRL+SHIFT+P` (or `CMD+SHIFT+P` on Mac) and we're going to type "custom doc" into the search bar. 
+### Deploying to Vercel
 
-     ![image](https://i.imgur.com/ILx3hZu.png)
-3. We're then going to copy and paste `https://nextjs.org/docs` into the prompt.
+The frontend is configured for easy deployment to Vercel:
 
-     ![image](https://i.imgur.com/psBjpQd.png)
-
-4. We're then going to use the default configs to add these docs to our available and indexed documents.
-
-     ![image](https://i.imgur.com/LULLeaF.png)
-
-5. After that - you will do the same with Vercel's documentation. After which you should see:
-
-     ![image](https://i.imgur.com/hjyXhhC.png) 
-
-</details>
-
-<details>
-  <summary>😎 Vibe Coding a Front End for the FastAPI Backend</summary>
-
-1. Use `Command-L` or `CTRL-L` to open the Cursor chat console. 
-
-2. Set the chat settings to the following:
-
-     ![image](https://i.imgur.com/LSgRSgF.png)
-
-3. Ask Cursor to create a frontend for your application. Iterate as much as you like!
-
-4. **Run the application** using the unified start script:
+1. **Install Vercel CLI:**
    ```bash
-   ./start.sh
+   npm install -g vercel
    ```
-   This script automatically:
-   - Checks if backend is running
-   - Starts backend in a new terminal if needed
-   - Waits for backend to be ready
-   - Starts the frontend
-   - Opens http://localhost:3000 in your browser
 
-> NOTE: If you run into any errors, copy and paste them back into the Cursor chat window - and ask Cursor to fix them!
+2. **Deploy:**
+   ```bash
+   cd frontend
+   vercel
+   ```
 
-> NOTE: You have been provided with a backend in the `/api` folder - please ensure your Front End integrates with it!
+3. **Follow the prompts** to configure your deployment
 
-</details>
+4. **Set environment variables** in Vercel dashboard:
+   - `NEXT_PUBLIC_API_URL`: Your backend API URL (or use the default localhost for testing)
 
-<details>
-  <summary>🚀 Deploying Your First LLM-powered Application with Vercel</summary>
+See [frontend/README.md](frontend/README.md) for detailed deployment instructions.
 
-1. Ensure you have signed into [Vercel](https://vercel.com/) with your GitHub account.
+---
 
-2. Ensure you have `npm` (this may have been installed in the previous vibe-coding step!) - if you need help with that, ask Cursor!
+## 🧪 Testing
 
-3. Run the command:
+For comprehensive testing instructions, see [TESTING_GUIDE.md](TESTING_GUIDE.md).
 
-     ```bash
-     npm install -g vercel
-     ```
+The guide covers:
+- Testing the unified start script
+- Verifying backend and frontend integration
+- Testing with existing backend instances
+- Troubleshooting common issues
 
-4. Run the command:
+---
 
-     ```bash
-     vercel
-     ```
+## 🎨 Customization
 
-5. Follow the in-terminal instructions. (Below is an example of what you will see!)
+### Frontend Design
 
-     ![image](https://i.imgur.com/D1iKGCq.png)
+The frontend uses a contemporary mid-century modern design with:
+- Animated blue/silver gradients
+- Soothing ambient music
+- Responsive layout
 
-6. Once the build is completed - head to the provided link and try out your app!
+To customize the design, see:
+- [Frontend README](frontend/README.md) for component structure
+- `.cursor/rules/frontend-rule.mdc` for design guidelines
 
-> NOTE: Remember, if you run into any errors - ask Cursor to help you fix them!
+### Backend Behavior
 
-</details>
+The AI coach's behavior is defined in `api/index.py` via the `SYSTEM_PROMPT`. Modify this to change the coaching style and responses.
 
-### Vercel Link to Share
+---
 
-You'll want to make sure you share you *domains* hyperlink to ensure people can access your app!
+## 🐛 Troubleshooting
 
-![image](https://i.imgur.com/mpXIgIz.png)
+### Common Issues
 
-> NOTE: Test this is the public link by trying to open your newly deployed site in an Incognito browser tab!
+**Backend won't start:**
+- Ensure `OPENAI_API_KEY` is set in `.env` file
+- Check that port 8000 is not already in use
+- Verify Python dependencies are installed: `uv sync`
 
-### 🎉 Congratulations! 
+**Frontend won't start:**
+- Ensure Node.js 18+ is installed
+- Run `npm install` in the `frontend/` directory
+- Check that the backend is running on port 8000
 
-You just deployed your first LLM-powered application! 🚀🚀🚀 Get on linkedin and post your results and experience! Make sure to tag us at @AIMakerspace!
+**npm command not found:**
+- See [frontend/README.md](frontend/README.md) for npm troubleshooting
+- Run `./frontend/fix-npm-permanent.sh` for a permanent fix
 
-Here's a template to get your post started!
+**API key issues:**
+- Use `./setup-env.sh` to interactively set your API key
+- Verify the `.env` file exists in the project root
+- Check that your API key starts with `sk-`
 
-```
-🚀🎉 Exciting News! 🎉🚀
+For more detailed troubleshooting, see:
+- [Backend README](api/README.md)
+- [Frontend README](frontend/README.md)
+- [Testing Guide](TESTING_GUIDE.md)
 
-🏗️ Today, I'm thrilled to announce that I've successfully built and shipped my first-ever LLM using the powerful combination of , and the OpenAI API! 🖥️
+---
 
-Check it out 👇
-[LINK TO APP]
+## 📖 Learning Resources
 
-A big shoutout to the @AI Makerspace for all making this possible. Couldn't have done it without the incredible community there. 🤗🙏
+### For Beginners
 
-Looking forward to building with the community! 🙌✨ Here's to many more creations ahead! 🥂🎉
+If you're new to development, check out:
 
-Who else is diving into the world of AI? Let's connect! 🌐💡
+1. **[Git Setup Guide](docs/GIT_SETUP.md)**: Learn git basics and repository management
+2. **[Interactive Dev Environment](https://github.com/AI-Maker-Space/Interactive-Dev-Environment-for-AI-Engineers)**: Set up your development environment
+3. **[Accessing GPT-4.1-mini Notebook](https://colab.research.google.com/drive/1sT7rzY_Lb1_wS0ELI1JJfff0NUEcSD72?usp=sharing)**: Learn about LLM APIs
 
-#FirstLLMApp 
-```
+### Vibe Coding Setup
+
+To maximize your AI-assisted development experience:
+
+1. **Configure Cursor Rules**: Check `.cursor/rules/` and customize `frontend-rule.mdc` with your design preferences
+2. **Index Documentation**: Use Cursor's custom docs feature to index:
+   - Next.js documentation: `https://nextjs.org/docs`
+   - Vercel documentation: `https://vercel.com/docs`
+3. **Use Chat Console**: Press `Command-L` (Mac) or `CTRL-L` (Windows) to open Cursor's chat
+
+---
+
+## 🤝 Contributing
+
+This is a learning project! Feel free to:
+- Fork the repository
+- Experiment with different designs
+- Modify the AI coach's behavior
+- Add new features
+- Share your improvements
+
+---
+
+## 📝 License
+
+This project is part of the AI Engineer Challenge by [AI Makerspace](https://github.com/AI-Maker-Space).
+
+---
+
+## 🎉 Congratulations!
+
+You've built your first LLM-powered application! 🚀
+
+**Share your results:**
+- Deploy to Vercel and share your live link
+- Post on LinkedIn and tag @AIMakerspace
+- Celebrate your achievement!
+
+---
+
+## 📞 Support
+
+- **Issues**: Open an issue on GitHub
+- **Documentation**: See the technical docs linked above
+- **Community**: Join the AI Makerspace community
+
+---
+
+<p align="center">
+  <strong>Built with ❤️ using FastAPI, Next.js, and OpenAI</strong>
+</p>
