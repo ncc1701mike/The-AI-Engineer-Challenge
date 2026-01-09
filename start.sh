@@ -165,32 +165,32 @@ else
         # Create a temporary script to run backend
         BACKEND_SCRIPT="/tmp/start_backend_$$.sh"
         
-        # Load .env file if it exists
-        ENV_LOAD=""
-        if [ -f "$PROJECT_ROOT/.env" ]; then
-            ENV_LOAD="export \$(grep -v '^#' '$PROJECT_ROOT/.env' | grep OPENAI_API_KEY | xargs)"
-        fi
+        # Build the script with proper escaping
+        {
+            echo "#!/bin/bash"
+            echo "cd \"$BACKEND_DIR\""
+            if [ -f "$PROJECT_ROOT/.env" ]; then
+                echo "if [ -f \"$PROJECT_ROOT/.env\" ]; then"
+                echo "    export \$(grep -v '^#' \"$PROJECT_ROOT/.env\" | grep OPENAI_API_KEY | xargs)"
+                echo "fi"
+            fi
+            echo "export OPENAI_API_KEY=\"$OPENAI_API_KEY\""
+            echo "echo \"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\""
+            echo "echo \"  Backend Server Starting\""
+            echo "echo \"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\""
+            echo "echo \"\""
+            echo "echo \"Backend URL: http://localhost:8000\""
+            echo "echo \"API Docs:    http://localhost:8000/docs\""
+            echo "echo \"\""
+            echo "echo \"Press Ctrl+C to stop the backend\""
+            echo "echo \"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\""
+            echo "echo \"\""
+            echo "uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000"
+            echo "echo \"\""
+            echo "echo \"Backend stopped. This window will close in 5 seconds...\""
+            echo "sleep 5"
+        } > "$BACKEND_SCRIPT"
         
-        cat > "$BACKEND_SCRIPT" << SCRIPT_EOF
-#!/bin/bash
-cd "$BACKEND_DIR"
-$ENV_LOAD
-export OPENAI_API_KEY="$OPENAI_API_KEY"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  Backend Server Starting"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo "Backend URL: http://localhost:8000"
-echo "API Docs:    http://localhost:8000/docs"
-echo ""
-echo "Press Ctrl+C to stop the backend"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000
-echo ""
-echo "Backend stopped. This window will close in 5 seconds..."
-sleep 5
-SCRIPT_EOF
         chmod +x "$BACKEND_SCRIPT"
         
         # Open in new Terminal window
