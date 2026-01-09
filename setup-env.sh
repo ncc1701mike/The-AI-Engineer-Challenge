@@ -31,16 +31,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_ROOT="$SCRIPT_DIR"
 ENV_FILE="$PROJECT_ROOT/.env"
 
-# Check if we're in an interactive terminal
-if [ ! -t 0 ]; then
-    # Not interactive, try to read from /dev/tty if available
-    if [ -r /dev/tty ]; then
-        exec < /dev/tty
-    else
-        print_error "This script requires an interactive terminal"
-        exit 1
-    fi
-fi
+# Flush output immediately
+exec 1>&2
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}  Setup .env File for OpenAI API Key${NC}"
@@ -51,7 +43,7 @@ echo ""
 if [ -f "$ENV_FILE" ]; then
     print_warning ".env file already exists"
     echo ""
-    echo -n "Do you want to update it? (y/n): "
+    printf "Do you want to update it? (y/n): "
     read -r update_env
     echo ""
     
@@ -65,7 +57,7 @@ fi
 print_info "Enter your OpenAI API key"
 print_info "You can get it from: https://platform.openai.com/api-keys"
 echo ""
-echo -n "OpenAI API Key: "
+printf "OpenAI API Key: "
 read -r api_key
 echo ""
 
@@ -77,7 +69,7 @@ fi
 # Validate API key format (starts with sk-)
 if [[ ! "$api_key" =~ ^sk- ]]; then
     print_warning "API key doesn't start with 'sk-'. Continue anyway? (y/n)"
-    echo -n "Continue: "
+    printf "Continue: "
     read -r continue_key
     echo ""
     if [[ ! "$continue_key" =~ ^[Yy]$ ]]; then
